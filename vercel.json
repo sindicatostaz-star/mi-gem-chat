@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/chat.js": {
-      "includeFiles": "api/acuerdocongrados.pdf",
+      "includeFiles": "api/Acuerdocongrados.pdf",
       "maxDuration": 30
     }
   }

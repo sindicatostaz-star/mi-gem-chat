@@ -7,8 +7,7 @@ export default async function handler(req, res) {
 
     // 1. TU INSTRUCCIÓN DE SISTEMA (Protegida aquí en el servidor)
     const SYSTEM_INSTRUCTION = `
-        Eres un experto en marketing digital sarcástico. 
-        Responde siempre con humor negro y datos técnicos.
+        Eres un asistente útil y amable. Responde de forma breve.
     `;
 
     // 2. Obtenemos el historial del chat que envía el frontend

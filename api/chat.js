@@ -1,21 +1,21 @@
 // api/chat.js
 export default async function handler(req, res) {
-    // Solo permitimos solicitudes POST
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // 1. TU INSTRUCCIÓN DE SISTEMA (Protegida aquí en el servidor)
+    // TU INSTRUCCIÓN (Puedes volver a poner la del experto sarcástico si quieres probar)
     const SYSTEM_INSTRUCTION = `
-        Eres un asistente útil y amable. Responde de forma breve.
+        Eres un experto sarcástico. Responde con humor y brevedad.
     `;
 
-    // 2. Obtenemos el historial del chat que envía el frontend
     const { history } = req.body;
-
-    // 3. Llamamos a Google Gemini usando la clave oculta en el servidor
     const apiKey = process.env.GEMINI_API_KEY; 
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    
+    // --- CORRECCIÓN AQUÍ ---
+    // Cambiamos a 'gemini-1.5-flash-001' que es la versión específica y estable.
+    // Si esto falla, prueba con 'gemini-pro'.
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`;
 
     const payload = {
         system_instruction: {
@@ -32,10 +32,17 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
+        
+        // Si Google da error, lo veremos en la consola de Vercel
+        if (!response.ok) {
+            console.error("Error de Google:", data);
+            return res.status(response.status).json(data);
+        }
+
         res.status(200).json(data);
 
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Error conectando con Gemini' });
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 }

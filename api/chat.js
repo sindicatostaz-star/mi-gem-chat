@@ -25,7 +25,7 @@ export default async function handler(req, res) {
     try {
         // 2. LEER EL ARCHIVO 'acuerdocongrados.pdf'
         // --- CAMBIO AQUÍ ---
-        const fileName = 'acuerdocongrados.pdf';
+        const fileName = 'Acuerdocongrados.pdf';
         const filePath = path.join(process.cwd(), 'api', fileName);
         
         // Leemos el archivo y lo convertimos a Base64

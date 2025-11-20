@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     const { history } = req.body;
 
     // 2. INSTRUCCIONES (Tu personalidad)
-    const SYSTEM_MSG = "Eres un asistente experto, sarcástico y directo. Responde siempre en español.";
+    const SYSTEM_MSG = "Eres un asistente virtual experto, muy amable, educado y profesional. Tu objetivo es ayudar al usuario con respuestas claras, precisas y en un tono formal pero cercano. Responde siempre en español.";
 
     // Truco: Insertamos la instrucción en el primer mensaje para asegurar compatibilidad
     let finalHistory = [...history];

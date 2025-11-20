@@ -1,7 +1,8 @@
-
 // api/chat.js
+import fs from 'fs';
+import path from 'path';
+
 export default async function handler(req, res) {
-    // 1. Verificaciones de seguridad básicas
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
@@ -13,39 +14,73 @@ export default async function handler(req, res) {
 
     const { history } = req.body;
 
-    // 2. INSTRUCCIONES (Tu personalidad)
-    const SYSTEM_MSG = "Eres un asistente virtual experto, muy amable, educado y profesional. Tu objetivo es ayudar al usuario con respuestas claras, precisas y en un tono formal pero cercano. Responde siempre en español.";
-
-    // Truco: Insertamos la instrucción en el primer mensaje para asegurar compatibilidad
-    let finalHistory = [...history];
-    if (finalHistory.length > 0 && finalHistory[0].role === 'user') {
-        finalHistory[0].parts[0].text = `${SYSTEM_MSG}\n\nUsuario: ${finalHistory[0].parts[0].text}`;
-    }
-
-    // 3. SELECCIÓN DEL MODELO (SACADO DE TU LISTA)
-    // Usamos 'gemini-2.0-flash' que aparece explícitamente en tu JSON.
-    const modelName = "gemini-2.0-flash"; 
-    
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+    // 1. INSTRUCCIONES DE PERSONALIDAD
+    const SYSTEM_PROMPT = `
+    Eres un asistente experto, educado y profesional.
+    Tienes acceso a un documento PDF adjunto llamado "Acuerdo con Grados".
+    Responde a las preguntas del usuario basándote ÚNICAMENTE en la información de ese PDF.
+    Si la respuesta no está en el documento, indícalo amablemente.
+    `;
 
     try {
+        // 2. LEER EL ARCHIVO 'acuerdocongrados.pdf'
+        // --- CAMBIO AQUÍ ---
+        const fileName = 'acuerdocongrados.pdf';
+        const filePath = path.join(process.cwd(), 'api', fileName);
+        
+        // Leemos el archivo y lo convertimos a Base64
+        const fileBuffer = fs.readFileSync(filePath);
+        const base64Data = fileBuffer.toString('base64');
+
+        // 3. PREPARAR EL MENSAJE
+        let parts = [];
+
+        // Añadimos el PDF al contexto
+        parts.push({
+            inline_data: {
+                mime_type: "application/pdf",
+                data: base64Data
+            }
+        });
+        
+        // Añadimos las instrucciones
+        parts.push({ text: SYSTEM_PROMPT });
+
+        // Añadimos la última pregunta del usuario
+        const lastUserMessage = history[history.length - 1].parts[0].text;
+        parts.push({ text: "Pregunta del usuario: " + lastUserMessage });
+
+        // 4. ENVIAR A GOOGLE (Modelo Gemini 2.0 Flash)
+        const modelName = "gemini-2.0-flash"; 
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
+
+        const payload = {
+            contents: [
+                {
+                    role: "user",
+                    parts: parts 
+                }
+            ]
+        };
+
         const response = await fetch(url, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: finalHistory })
+            body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
         if (!response.ok) {
-            console.error("Error de Google:", JSON.stringify(data));
+            console.error("Error Google:", JSON.stringify(data));
             return res.status(response.status).json(data);
         }
 
         res.status(200).json(data);
 
     } catch (error) {
-        console.error("Error del servidor:", error);
-        res.status(500).json({ error: 'Error interno de conexión' });
+        console.error("Error:", error);
+        // Mensaje de error útil por si el archivo no está bien puesto
+        res.status(500).json({ error: `No pude leer el archivo ${fileName}. Asegúrate de que está en la carpeta 'api/'` });
     }
 }

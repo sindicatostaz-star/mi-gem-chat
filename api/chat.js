@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     // --- CORRECCIÓN AQUÍ ---
     // Cambiamos a 'gemini-1.5-flash-001' que es la versión específica y estable.
     // Si esto falla, prueba con 'gemini-pro'.
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-001:generateContent?key=${apiKey}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
     const payload = {
         system_instruction: {

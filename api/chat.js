@@ -4,24 +4,35 @@ export default async function handler(req, res) {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
-    // TU INSTRUCCIÓN (Puedes volver a poner la del experto sarcástico si quieres probar)
-    const SYSTEM_INSTRUCTION = `
-        Eres un experto sarcástico. Responde con humor y brevedad.
-    `;
-
     const { history } = req.body;
     const apiKey = process.env.GEMINI_API_KEY; 
-    
-    // --- CORRECCIÓN AQUÍ ---
-    // Cambiamos a 'gemini-1.5-flash-001' que es la versión específica y estable.
-    // Si esto falla, prueba con 'gemini-pro'.
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`;
 
+    // 1. DEFINIMOS LA PERSONALIDAD
+    const SYSTEM_INSTRUCTION = `
+        INSTRUCCIONES DEL SISTEMA:
+        Eres un experto asistente de IA, sarcástico y directo.
+        Responde siempre con humor.
+        --------------------------------
+    `;
+
+    // 2. TRUCO DE COMPATIBILIDAD:
+    // Si es el primer mensaje, le pegamos las instrucciones al principio.
+    // Esto evita el error "not supported" que te estaba saliendo.
+    let finalHistory = [...history]; // Copiamos el historial
+    
+    if (finalHistory.length > 0 && finalHistory[0].role === 'user') {
+        // Modificamos el primer mensaje del usuario para incluir las instrucciones ocultas
+        const originalText = finalHistory[0].parts[0].text;
+        finalHistory[0].parts[0].text = SYSTEM_INSTRUCTION + "\n\nUsuario dice: " + originalText;
+    }
+
+    // 3. MODELO ROBUSTO
+    // Usamos 'gemini-1.5-flash'. Si este falla, puedes probar 'gemini-1.0-pro'
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    // 4. PAYLOAD SIMPLIFICADO (Sin el campo system_instruction que daba error)
     const payload = {
-        system_instruction: {
-            parts: [{ text: SYSTEM_INSTRUCTION }]
-        },
-        contents: history
+        contents: finalHistory
     };
 
     try {
@@ -32,17 +43,17 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        
-        // Si Google da error, lo veremos en la consola de Vercel
+
         if (!response.ok) {
-            console.error("Error de Google:", data);
+            // Si falla, imprimimos el error en los logs de Vercel
+            console.error("ERROR GOOGLE:", JSON.stringify(data, null, 2));
             return res.status(response.status).json(data);
         }
 
         res.status(200).json(data);
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.error("Error servidor:", error);
+        res.status(500).json({ error: 'Error de conexión' });
     }
 }

@@ -1,8 +1,8 @@
 {
   "functions": {
     "api/chat.js": {
-      "includeFiles": "api/Acuerdocongrados.pdf",
-      "maxDuration": 30
+      "includeFiles": "api/*.pdf", 
+      "maxDuration": 60
     }
   }
 }

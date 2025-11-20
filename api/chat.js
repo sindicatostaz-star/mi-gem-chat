@@ -14,44 +14,58 @@ export default async function handler(req, res) {
 
     const { history } = req.body;
 
-    // 1. INSTRUCCIONES DE PERSONALIDAD
+    // ==========================================
+    // 1. LISTA DE TUS ARCHIVOS AQUÍ
+    // ==========================================
+    // Añade aquí todos los nombres de los archivos que subas a la carpeta 'api/'
+    const misArchivos = [
+        'acuerdocongrados.pdf'
+    ];
+
     const SYSTEM_PROMPT = `
-    Eres un asistente experto, educado y profesional.
-    Tienes acceso a un documento PDF adjunto llamado "Acuerdo con Grados".
-    Responde a las preguntas del usuario basándote ÚNICAMENTE en la información de ese PDF.
-    Si la respuesta no está en el documento, indícalo amablemente.
+    Eres un asistente experto de STAZ.
+    Tienes acceso a varios documentos PDF adjuntos.
+    Responde a las preguntas del usuario consultando TODOS los documentos proporcionados.
+    Si la información está en uno de ellos, úsala.
     `;
 
     try {
-        // 2. LEER EL ARCHIVO 'acuerdocongrados.pdf'
-        // --- CAMBIO AQUÍ ---
-        const fileName = 'Acuerdocongrados.pdf';
-        const filePath = path.join(process.cwd(), 'api', fileName);
-        
-        // Leemos el archivo y lo convertimos a Base64
-        const fileBuffer = fs.readFileSync(filePath);
-        const base64Data = fileBuffer.toString('base64');
-
-        // 3. PREPARAR EL MENSAJE
+        // 2. PREPARAR EL MENSAJE CON MÚLTIPLES ARCHIVOS
         let parts = [];
 
-        // Añadimos el PDF al contexto
-        parts.push({
-            inline_data: {
-                mime_type: "application/pdf",
-                data: base64Data
+        // Bucle: Leemos cada archivo de la lista y lo añadimos
+        for (const fileName of misArchivos) {
+            try {
+                const filePath = path.join(process.cwd(), 'api', fileName);
+                
+                // Verificamos si el archivo existe antes de intentar leerlo
+                if (fs.existsSync(filePath)) {
+                    const fileBuffer = fs.readFileSync(filePath);
+                    const base64Data = fileBuffer.toString('base64');
+
+                    parts.push({
+                        inline_data: {
+                            mime_type: "application/pdf",
+                            data: base64Data
+                        }
+                    });
+                    console.log(`Archivo cargado: ${fileName}`);
+                } else {
+                    console.warn(`Advertencia: El archivo ${fileName} no se encuentra en el servidor.`);
+                }
+            } catch (err) {
+                console.error(`Error leyendo ${fileName}:`, err);
             }
-        });
-        
-        // Añadimos las instrucciones
+        }
+
+        // 3. AÑADIMOS TEXTO E HISTORIAL
         parts.push({ text: SYSTEM_PROMPT });
 
-        // Añadimos la última pregunta del usuario
         const lastUserMessage = history[history.length - 1].parts[0].text;
         parts.push({ text: "Pregunta del usuario: " + lastUserMessage });
 
-        // 4. ENVIAR A GOOGLE (Modelo Gemini 2.0 Flash)
-        const modelName = "gemini-2.5-pro-preview-03-25"; 
+        // 4. ENVIAR A GOOGLE
+        const modelName = "gemini-2.0-flash"; 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
         const payload = {
@@ -79,8 +93,7 @@ export default async function handler(req, res) {
         res.status(200).json(data);
 
     } catch (error) {
-        console.error("Error:", error);
-        // Mensaje de error útil por si el archivo no está bien puesto
-        res.status(500).json({ error: `No pude leer el archivo ${fileName}. Asegúrate de que está en la carpeta 'api/'` });
+        console.error("Error general:", error);
+        res.status(500).json({ error: 'Error interno procesando archivos' });
     }
 }

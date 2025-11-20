@@ -8,7 +8,27 @@
         /* Mismos estilos que antes */
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .chat-container { width: 400px; height: 600px; background: white; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header { background: linear-gradient(135deg, #4285f4, #8ab4f8); color: white; padding: 20px; font-weight: bold; text-align: center; }
+        .chat-header { 
+            background: linear-gradient(135deg, #4285f4, #8ab4f8); 
+            color: white; 
+            padding: 15px; 
+            font-weight: bold; 
+            /* AÑADIDO PARA ALINEAR IMAGEN Y TEXTO: */
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; /* Espacio entre imagen y texto */
+        }
+        
+        /* AÑADIR ESTO NUEVO PARA LA IMAGEN */
+        .avatar-img {
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; /* Esto la hace redonda */
+            background-color: white;
+            padding: 2px;
+            object-fit: cover;
+        }
         .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { padding: 10px 15px; border-radius: 10px; max-width: 80%; line-height: 1.4; font-size: 14px; }
         .user-msg { background-color: #e8f0fe; color: #1967d2; align-self: flex-end; }
@@ -21,7 +41,11 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">Mi Gem Protegido</div>
+        <div class="chat-header">
+            <img src="https://www.staz.es/images/logobueno.png" alt="Logo" class="avatar-img">
+            
+            <span>ChatBot S.T.A.Z</span>
+        </div>
         <div class="chat-box" id="chatBox">
             <div class="message ai-msg">Buenos días, soy el ChatBot del Acuerdo de Condiciones Laborales del Personal Funcionario del Ayuntamiento de Zaragoza, ¿En que te puedo Ayudar?</div>
         </div>

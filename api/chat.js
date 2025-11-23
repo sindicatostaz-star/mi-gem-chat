@@ -65,7 +65,7 @@ export default async function handler(req, res) {
         parts.push({ text: "Pregunta del usuario: " + lastUserMessage });
 
         // 4. ENVIAR A GOOGLE
-        const modelName = "gemini-3-pro-preview"; 
+        const modelName = "gemini-2.5-pro-preview-03-25"; 
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
 
         const payload = {

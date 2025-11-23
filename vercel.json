@@ -2,7 +2,7 @@
   "functions": {
     "api/chat.js": {
       "includeFiles": "api/*.pdf", 
-      "maxDuration": 60
+      "maxDuration": 120
     }
   }
 }

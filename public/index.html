@@ -1,27 +1,24 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat STAZ</title>
     <style>
-        /* --- CORRECCIÓN CLAVE --- */
-        /* Esto asegura que el padding y el borde no aumenten el ancho de los elementos,
-           solucionando el problema del botón cortado. */
+        /* Regla para que el botón no se corte en móviles */
         *, *::before, *::after {
             box-sizing: border-box;
         }
 
-        /* --- ESTILOS GENERALES (PC / TABLET) --- */
-        
+        /* --- ESTILOS GENERALES --- */
         html, body {
-            height: 650px;
-            width: 100%; /* Aseguramos ancho total */
+            height: 100%;
+            width: 100%;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', system-ui, sans-serif; 
+            font-family: 'Segoe UI', system-ui, sans-serif;
             background-color: #ffffff;
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         .chat-container {
@@ -41,7 +38,7 @@ l<!DOCTYPE html>
             align-items: center;
             gap: 12px;
             border-bottom: 1px solid #eee;
-            flex-shrink: 0; 
+            flex-shrink: 0;
         }
 
         .avatar-img {
@@ -63,7 +60,7 @@ l<!DOCTYPE html>
             display: flex;
             flex-direction: column;
             gap: 15px;
-            -webkit-overflow-scrolling: touch; 
+            -webkit-overflow-scrolling: touch;
         }
 
         .message {
@@ -87,7 +84,7 @@ l<!DOCTYPE html>
             color: #333;
             align-self: flex-start;
             border-bottom-left-radius: 2px;
-            white-space: pre-wrap; 
+            white-space: pre-wrap;
         }
 
         .input-area {
@@ -97,18 +94,18 @@ l<!DOCTYPE html>
             gap: 10px;
             background: #fff;
             flex-shrink: 0;
-            width: 100%; /* Aseguramos que no se pase del ancho */
+            width: 100%;
         }
 
         input {
-            flex: 1; /* Toma todo el espacio sobrante */
+            flex: 1;
             padding: 12px;
             border: 1px solid #ddd;
             border-radius: 25px;
             outline: none;
             font-size: 16px;
             background: #f9f9f9;
-            min-width: 0; /* Truco para flexbox en móviles */
+            min-width: 0;
         }
 
         input:focus {
@@ -125,8 +122,8 @@ l<!DOCTYPE html>
             cursor: pointer;
             font-weight: 600;
             font-size: 15px;
-            flex-shrink: 0; /* No permite que el botón se aplaste */
-            white-space: nowrap; /* Evita que el texto del botón se rompa en dos líneas */
+            flex-shrink: 0;
+            white-space: nowrap;
         }
 
         button:hover { background: #3367d6; }
@@ -141,26 +138,20 @@ l<!DOCTYPE html>
             display: none;
         }
 
-        /* --- ESTILOS SOLO PARA MÓVIL (Pantallas pequeñas) --- */
+        /* --- ESTILOS MÓVIL --- */
         @media (max-width: 600px) {
             .chat-header { padding: 10px 12px; }
             .avatar-img { height: 32px; }
             .header-title { font-size: 14px; }
             .chat-box { padding: 10px 12px; }
             .message { max-width: 88%; padding: 10px 14px; }
-            
-            /* Ajustes finos para la barra inferior en móvil */
-            .input-area {
-                padding: 8px 10px; /* Menos relleno */
-                gap: 8px; /* Menos hueco entre input y botón */
-            }
+            .input-area { padding: 8px 10px; gap: 8px; }
             input { padding: 10px 12px; }
             button { padding: 10px 16px; }
         }
     </style>
 </head>
 <body>
-
     <div class="chat-container">
         <div class="chat-header">
             <img src="https://www.staz.es/images/logobueno.png" alt="STAZ" class="avatar-img">
@@ -168,7 +159,7 @@ l<!DOCTYPE html>
         </div>
 
         <div class="chat-box" id="chatBox">
-            <div class="message ai-msg">Hola, soy el Asistente del Acuerdo de Condiciones Laborales del Personal Funcionario del Ayuntamiento de Zaragoza. ¿En qué puedo ayudarte?</div>
+            <div class="message ai-msg">Hola, soy el Asistente del Acuerdo de Condiciones Laborales del Ayuntamiento de Zaragoza. ¿En qué puedo ayudarte?</div>
         </div>
         
         <div class="loading" id="loadingIndicator">Consultando acuerdo...</div>

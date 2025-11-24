@@ -6,6 +6,12 @@
     <title>Chat STAZ</title>
     <style>
         /* --- ESTILOS GENERALES (PC / TABLET) --- */
+        /* --- CORRECCIÓN CLAVE --- */
+        /* Esto asegura que el padding y el borde no aumenten el ancho de los elementos,
+           solucionando el problema del botón cortado. */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
         
         html, body {
             height: 650px;

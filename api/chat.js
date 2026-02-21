@@ -19,7 +19,7 @@ export default async function handler(req, res) {
     
     // --- CONFIGURACIÓN ---
     const pdfName = 'acuerdocongrados.pdf'; // ASEGÚRATE QUE EN GITHUB SE LLAMA IGUAL
-    const modelName = "gemini-2.5-flash";
+    const modelName = "gemini-3-flash-preview";
     // ---------------------
 
     const { history } = req.body;
